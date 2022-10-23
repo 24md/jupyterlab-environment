@@ -1,6 +1,6 @@
-# Setup JupyterLab Environment on a Vultr Cloud Instance
+# Set Up JupyterLab Environment on a Vultr Cloud Instance
 
-The following are the prerequisites and the steps to setup Jupyterlab Enivornment on a Vultr Cloud instance.
+The following are the prerequisites and the steps to set up Jupyterlab Enivornment on a Vultr Cloud instance.
 
 ## Prerequisites
 
@@ -12,48 +12,48 @@ The following are the prerequisites and the steps to setup Jupyterlab Enivornmen
 Add a new user and log into it.
 
 ```console
-adduser NEW_USER
-usermod -aG sudo NEW_USER
-su - NEW_USER
+# adduser NEW_USER
+# usermod -aG sudo NEW_USER
+# su - NEW_USER
 ```
 
 Install the Python virtual environment package.
 
 ```console
-sudo pip install -U virtualenv
+$ sudo pip install -U virtualenv
 ```
 
 Create and enter a new virutal environment for JupyterLab.
 
 ```console
-virtualenv --system-site-packages -p python3 jupyterlab_env
-source jupyterlab_env/bin/activate
+$ virtualenv --system-site-packages -p python3 jupyterlab_env
+$ source jupyterlab_env/bin/activate
 ```
 
 Update pip and exit the virtual environment.
 
 ```console
-pip install --upgrade pip
-deactivate
+$ pip install --upgrade pip
+$ deactivate
 ```
 
 Install the JupyterLab package using `pip`.
 
 ```console
-sudo pip install -U jupyterlab
+$ sudo pip install -U jupyterlab
 ```
 
 Create a password hash for protecting JupyterLab.
 
 ```console
-python3 -c "from jupyter_server.auth import passwd; print(passwd('YOUR_PASSWORD'))"
+$ python3 -c "from jupyter_server.auth import passwd; print(passwd('YOUR_PASSWORD'))"
 ```
 
 Create and edit the JupyterLab configuration file.
 
 ```console
-jupyter lab --generate-config
-nano /home/NEW_USER/.jupyter/jupyter_lab_config.py
+$ jupyter lab --generate-config
+$ nano /home/NEW_USER/.jupyter/jupyter_lab_config.py
 ```
 
 Find and replace the following values in the file.
@@ -66,13 +66,13 @@ c.ServerApp.allow_remote_access = True
 Disable the firewall temporarily to allow connections to JupyterLab.
 
 ```console
-sudo ufw disable
+$ sudo ufw disable
 ```
 
 Run the JupyterLab server temporarily.
 
 ```console
-jupyter lab --ip 0.0.0.0
+$ jupyter lab --ip 0.0.0.0
 ```
 
 The above command will spawn a JupyterLab server that listens on port 8888. Verify the deployment by opening the instance's public IP in your web browser.
@@ -83,38 +83,38 @@ The above command will spawn a JupyterLab server that listens on port 8888. Veri
 Uninstall existing Jupyter kernel.
 
 ```console
-sudo python3 -m pip uninstall ipykernel
+$ sudo python3 -m pip uninstall ipykernel
 ```
 
 Enter the virtual environment
 
 ```console
-source jupyterlab_env/bin/activate
+$ source jupyterlab_env/bin/activate
 ```
 
 Create a new Jupyter kernel.
 
 ```console
-pip install ipykernel
-python3 -m ipykernel install --user --name=venvpy3
+$ pip install ipykernel
+$ python3 -m ipykernel install --user --name=venvpy3
 ```
 
 Copy $PATH into clipboard.
 
 ```console
-echo $PATH
+$ echo $PATH
 ```
 
 Exit the virtual environment.
 
 ```console
-deactivate
+$ deactivate
 ```
 
 Create a new service named `jupyterlab`.
 
 ```console
-sudo nano /lib/systemd/system/jupyterlab.service
+$ sudo nano /lib/systemd/system/jupyterlab.service
 ```
 
 Add the following contents to the file.
@@ -137,21 +137,21 @@ WantedBy=multi-user.target
 Create the working directory for JupyterLab.
 
 ```console
-mkdir ~/jupyterlab
+$ mkdir ~/jupyterlab
 ```
 
 Initialize the `jupyterlab` service.
 
 ```console
-sudo systemctl daemon-reload
-sudo systemctl start jupyterlab
-sudo systemctl status jupyterlab
+$ sudo systemctl daemon-reload
+$ sudo systemctl start jupyterlab
+$ sudo systemctl status jupyterlab
 ```
 
 Install the Nginx package using `apt`.
 
 ```console
-sudo apt install nginx
+$ sudo apt install nginx
 ```
 
 We will use Nginx as the reverse proxy server for channeling traffic to our JupyterLab server.
@@ -159,8 +159,8 @@ We will use Nginx as the reverse proxy server for channeling traffic to our Jupy
 Swap the Nginx configuration file with the reverse procy configuration.
 
 ```console
-sudo rm -f /etc/nginx/nginx.conf
-sudo nano /etc/nginx/nginx.conf
+$ sudo rm -f /etc/nginx/nginx.conf
+$ sudo nano /etc/nginx/nginx.conf
 ```
 
 Add the following contents to the file.
@@ -202,27 +202,27 @@ events {}
 Restart the `nginx` server.
 
 ```console
-sudo systemctl restart nginx
+$ sudo systemctl restart nginx
 ```
 
 Install the `certbot` package using `snap`.
 
 ```console
-sudo snap install --classic certbot
+$ sudo snap install --classic certbot
 ```
 
 Create a new Let's Encrypt certificate for your hostname.
 
 ```console
-sudo certbot --nginx -d YOUR_HOSTNAME
+$ sudo certbot --nginx -d YOUR_HOSTNAME
 ```
 
 Set the firewall rules and enable the firewall.
 
 ```console
-sudo ufw allow 'Nginx Full'
-sudo ufw enable
-sudo ufw status
+$ sudo ufw allow 'Nginx Full'
+$ sudo ufw enable
+$ sudo ufw status
 ```
 
 You can now acecss the JupyterLab environment using your subdomain/hostname via the web browser.
